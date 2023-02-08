@@ -99,8 +99,64 @@ function getCityInfo(lattitude, longitude){
 		}
 		$("#uv-index").append(uvIndex);
 
+        displayForecast(response);
+
     })
     
+
+}
+
+//showing 5 days forecast
+
+function displayForecast(response){
+    //previous forecast must be empty before rendering new 
+    $('#forecast').empty();
+    var days=response.daily;
+    console.log(days);
+
+    var fDays=days.slice(1,6);
+    for(i=0;i<fDays.length;i++){
+        console.log(fDays[i]);
+        var dayC=$("<div>");
+        dayC.addClass("card col-md-4 dayC");
+        dayC.css("background-color","lightblue");
+        dayC.css("margin-right",'2px');
+        dayC.css("margin-left",'15px');
+        dayC.css("margin-bottom", '5px');
+        dayC.css("font-size",'15px');
+
+        var  cardBody=$("<div>");
+        cardBody.addClass('card-body');
+        dayC.append(cardBody);
+
+        var cardName=$('<h6>');
+        cardName.addClass('card-title');
+        
+        var dateStamp=moment.unix(fDays[i].dt);
+        var forcastDate=dateStamp.format('L');
+        cardName.text(forcastDate);
+        cardBody.append(cardName);
+
+        //icon
+
+        var wIcon=$('<img>');
+        var iconCode = fDays[i].weather[0].icon;
+		var iconUrl = "http://openweathermap.org/img/wn/" + iconCode + ".png";
+		wIcon.attr("src", iconUrl);
+		cardBody.append(wIcon);
+
+        var tempOfDay = $("<p>");
+		tempOfDay.text(`Temp: ${fDays[i].temp.max} \xB0F`);
+		cardBody.append(tempOfDay);
+
+		var humidityOfDay = $("<p>");
+		humidityOfDay.text(`Humidity: ${fDays[i].humidity}%`);
+		cardBody.append(humidityOfDay);
+
+		$("#forecast").append(dayC);
+
+
+    }
 
 }
 
