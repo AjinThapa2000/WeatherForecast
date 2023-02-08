@@ -1,6 +1,22 @@
 let apiKey="a836acbd536c6ec3b05d3d1fcc35d97f";
 let weatherByCity="api.openweathermap.org/data/2.5/forecast?q={city name}&appid={API key}" +apiKey;
 var cities=[];
+var listOfCities;
+
+if(localStorage.getItem("cities")){
+    listOfCities=JSON.parse(localStorage.getItem("cities"));
+    for(i=0;i<listOfCities.length;i++){
+        lastCitySearched=listOfCities.length-1;
+        var lastCity=listOfCities[lastCitySearched];
+    }
+
+} 
+else{
+    cities;
+}  
+getLastCityInfo();
+
+
 
 
 //search city
@@ -24,6 +40,7 @@ $('#search-city').on("click", function(event){
 
         //Add city to array cities
         cities.push(city);
+        console.log('City Name: '+city);
         //store city in local storage
         localStorage.setItem("cities", JSON.stringify(cities));
 
@@ -35,6 +52,12 @@ $('#search-city').on("click", function(event){
         $('#city-name').prepend(cityName);
 
         //when i click city name in the list of city 
+        cityName.on('click',function(){
+            lattitude=$(this).attr("lattitude");
+            longitude=$(this).attr("longitude");
+            getCityName(response);
+            getCityInfo(lattitude,longitude);
+        });
 
         getCityName(response);
         getCityInfo(lattitude,longitude);
@@ -106,6 +129,27 @@ function getCityInfo(lattitude, longitude){
 
 }
 
+function getLastCityInfo() {
+	$("#city-name").clear;
+	var queryURL1 =
+		"https://api.openweathermap.org/data/2.5/weather?q=" +
+		lastCity +
+		"&appid=" +
+		apiKey;
+
+	$.ajax({
+		url: queryURL1,
+		method: "GET",
+	}).then(function (response) {
+		console.log(response);
+		lattitude = response.coord.lat;
+		longitude = response.coord.lon;
+
+		getCityName(response);
+		getCityInfo(lattitude, longitude);
+	});
+}
+
 //showing 5 days forecast
 
 function displayForecast(response){
@@ -144,7 +188,7 @@ function displayForecast(response){
 		var iconUrl = "http://openweathermap.org/img/wn/" + iconCode + ".png";
 		wIcon.attr("src", iconUrl);
 		cardBody.append(wIcon);
-
+        //date showing (Temprature, humidity, weather and sunrise Time) of 5 days
         var tempOfDay = $("<p>");
 		tempOfDay.text(`Temp: ${fDays[i].temp.max} \xB0F`);
 		cardBody.append(tempOfDay);
@@ -153,11 +197,22 @@ function displayForecast(response){
 		humidityOfDay.text(`Humidity: ${fDays[i].humidity}%`);
 		cardBody.append(humidityOfDay);
 
+        var weatherOfDay = $("<p>");
+		weatherOfDay.text(`Weather: ${fDays[i].weather[0].description}`);
+		cardBody.append(weatherOfDay);
+
+        var sunriseOfDay = $("<p>");
+        let unix=fDays[i].sunrise;
+        let sunriseTime=new Date(unix*1000);
+		sunriseOfDay.text(`Sunrise: ${sunriseTime}`);
+		cardBody.append(sunriseOfDay);
+
 		$("#forecast").append(dayC);
 
 
     }
 
 }
+
 
 
