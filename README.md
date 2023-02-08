@@ -1,7 +1,7 @@
 # WeatherForecast
 Find 5 days Weather Forecaste
 
-Page Link: https://ajinthapa2000.github.io/WeatherForecaste/
+Page Link: https://ajinthapa2000.github.io/WeatherForecast/
 
 # User Story
 
