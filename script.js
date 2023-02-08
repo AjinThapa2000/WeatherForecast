@@ -1,0 +1,107 @@
+let apiKey="a836acbd536c6ec3b05d3d1fcc35d97f";
+let weatherByCity="api.openweathermap.org/data/2.5/forecast?q={city name}&appid={API key}" +apiKey;
+var cities=[];
+
+
+//search city
+$('#search-city').on("click", function(event){
+    event.preventDefault();
+    //capture value from input box
+    var city=$("#search-input").val();
+
+    console.log(city);
+
+    var queryURL="https://api.openweathermap.org/data/2.5/weather?q="+city+ "&appid="+apiKey;
+
+    //Ajax request to get data from source
+    $.ajax({
+        url:queryURL,
+        method:'GET',
+    }).then(function(response){
+        console.log(response);
+        lattitude=response.coord.lat;
+        longitude=response.coord.lon;
+
+        //Add city to array cities
+        cities.push(city);
+        //store city in local storage
+        localStorage.setItem("cities", JSON.stringify(cities));
+
+        var cityName=$('<li>');
+        cityName.addClass("list-group-item city-item");
+        cityName.text(response.name);
+        cityName.attr("lattitude",response.coord.lat);
+        cityName.attr("longitude",response.coord.lon);
+        $('#city-name').prepend(cityName);
+
+        //when i click city name in the list of city 
+
+        getCityName(response);
+        getCityInfo(lattitude,longitude);
+        
+    })
+ 
+
+
+
+})
+
+//show search city name and weather icon
+
+function getCityName(response){
+    //current date
+    var todaysDate=moment().format('L');
+    //display city name current date and icon
+    $('.card-title').text(`${response.name} (${todaysDate})`);
+
+    var wIcon=$('<img>');
+    var iconCode=response.weather[0].icon;
+    var iconUrl="http://openweathermap.org/img/wn/" + iconCode + ".png";
+    wIcon.attr('src', iconUrl);
+    $('.card-title').append(wIcon);
+
+
+}
+
+//city information
+function getCityInfo(lattitude, longitude){
+    var queryURL2="https://api.openweathermap.org/data/2.5/onecall?lat=" + lattitude + "&lon=" + longitude +
+    "&units=imperial&appid="+apiKey;
+
+    $.ajax({
+        url:queryURL2,
+        method:'GET'
+    }).then(function(response){
+        //showing city weather info such as temprature, humidity wind-speed, uv index
+        $("#temperature").text(`Temperature: ${response.current.temp} \xB0F`);
+		$("#humidity").text(`Humidity: ${response.current.humidity}%`);
+		$("#wind-speed").text(`Wind Speed: ${response.current.wind_speed} MPH`);
+        $("#uv-index").text(`UV Index: `);
+
+		// viewing uv index
+		var uvIndex = $("<span>");
+		uvIndex.text(`${response.current.uvi}`);
+		// presenting conditions are favorable, moderate, or severe
+		var uv = response.current.uvi;
+		if (uv <= 2) {
+			uvIndex.addClass("badge badge-success");
+		} else if (uv <= 5) {
+			uvIndex.addClass("badge badge-warning");
+		} else if (uv <= 7) {
+			uvIndex.addClass("badge");
+			uvSpan.css("background-color", "orange");
+		} else if (uv <= 9) {
+			uvIndex.addClass("badge badge-danger");
+		} else {
+			uvIndex.addClass("badge");
+			uvIndex.css("background-color", "purple");
+			uvIndex.css("color", "white");
+		}
+		$("#uv-index").append(uvIndex);
+
+    })
+    
+
+}
+
+
