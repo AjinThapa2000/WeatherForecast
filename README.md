@@ -16,7 +16,7 @@ When I view the UV index, a colour indicating whether the conditions are favoura
 When I view the forecast for that city, I am then given a 5-day forecast that shows the date, a representation of the weather in the form of a symbol, the temperature, the humidity and actual sunrise time.
 
 # Page View
-
+![](image/weatherImage.png)
 
 
 
